@@ -1,0 +1,85 @@
+.buysell-container {
+    
+    margin: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    background-image: url('https://i.pinimg.com/1200x/e3/70/a1/e370a15754ce87aa55225ed16be6afa2.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-top: 40px;
+    margin-bottom: 60px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    color: white; /* Ensure heading stays white */
+}
+
+.buttons-container {
+    display: flex;
+    gap: 20px;
+}
+
+.button {
+    width: 100px;
+    height: 100px;
+    background-color: #f5f5dc; /* Beige base */
+    border: 3px solid #800000; /* Maroon border */
+    border-radius: 50%;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.5);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.button:hover {
+    transform: scale(1.1);
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.7);
+}
+
+.buy {
+    background-color: #800000; /* Maroon */
+    border-color: #660000; /* Darker maroon */
+}
+
+.buy:hover {
+    background-color: #a00000; /* Slightly lighter on hover */
+}
+
+.sell {
+    background-color: #f5f5dc; /* Beige */
+    border-color: #d4b87a; /* Darker beige accent */
+}
+
+.sell:hover {
+    background-color: #e0d5b0; /* Slightly darker beige hover */
+}
+
+.icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    user-select: none;
+}
+
+.icon.buy {
+    color: #f5f5dc; /* Beige icon for Buy */
+}
+
+.icon.sell {
+    color: #800000; /* Maroon icon for Sell */
+}
+
+@media (max-width: 600px) {
+    .buttons-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
