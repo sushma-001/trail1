@@ -13,11 +13,16 @@ import StudentLogin from "./pages/StudentLogin";
 // import Home from "./pages/Home.jsx"
 import RecipesPage from "./pages/RecipesPage";
 import Layout from "./pages/Layout";
-import MentalWellness from "./pages/MentalWellness"
-import FindSupport from "./pages/FindSupport"
+import MentalWellness from "./pages/MentalWellness";
+import FindSupport from "./pages/FindSupport";
 import CounsellorDetails from "./pages/CounsellorDetails";
 import CategoryPage from "./pages/Categorypage";
-import ProfilePage from "./pages/ProfilePage"
+import ProfilePage from "./pages/ProfilePage";
+import CounsellorRegistration from "./pages/CounsellorRegistration";
+import CounsellorDashboard from "./pages/CounsellorDashboard";
+import FindCounsellor from "./pages/FindCounsellor";
+import CounsellorProfile from "./pages/CounsellorProfile";
+import MySessions from "./pages/MySessions";
 
 function App() {
   return (
@@ -40,7 +45,13 @@ function App() {
         <Route path="/sell" element={<Sell />} />
         <Route path="/academic" element={<Resources />} />
         <Route path="/upload" element={<UploadResourceForm />} />
+        <Route path="/mental-wellness" element={<MentalWellness />} />
         <Route path="/wellness" element={<MentalWellness />} />
+        <Route path="/counsellor-registration" element={<CounsellorRegistration />} />
+        <Route path="/counsellor-dashboard" element={<CounsellorDashboard />} />
+        <Route path="/find-counsellor" element={<FindCounsellor />} />
+        <Route path="/counsellor/:id" element={<CounsellorProfile />} />
+        <Route path="/my-sessions" element={<MySessions />} />
         <Route path="/support" element={<FindSupport />} />
         <Route path="/counsellor/:id" element={<CounsellorDetails />} />
         <Route path="/food" element={<RecipesPage/>} />

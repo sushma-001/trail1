@@ -72,7 +72,7 @@ public class StudentService {
     public Student updateStudent2(Student student) {
     studentRepository.update(student);
     if (student.getStudentId() != null) {
-        return studentRepository.findById2(student.getStudentId()); // return fresh copy
+        return studentRepository.findById(student.getStudentId()).orElse(null); // return fresh copy
     } else {
         return null;
     }
