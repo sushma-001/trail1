@@ -4,20 +4,19 @@ import java.sql.Timestamp;
 
 public class CounsellingSession {
 
-    private int studentId;
     private int counsellorId;
-    private Timestamp finalTime;
+    private int serviceId;
+    private int studentId;
     private boolean isApproved;
+    private String timeOptions;
+    private CounsellingMode counsellingMode;
+    private Timestamp finalTime;
+
+    public enum CounsellingMode {
+        Online, Offline
+    }
 
     // Getters and Setters
-
-    public int getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(int studentId) {
-        this.studentId = studentId;
-    }
 
     public int getCounsellorId() {
         return counsellorId;
@@ -27,12 +26,20 @@ public class CounsellingSession {
         this.counsellorId = counsellorId;
     }
 
-    public Timestamp getFinalTime() {
-        return finalTime;
+    public int getServiceId() {
+        return serviceId;
     }
 
-    public void setFinalTime(Timestamp finalTime) {
-        this.finalTime = finalTime;
+    public void setServiceId(int serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public int getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
     }
 
     public boolean isApproved() {
@@ -41,5 +48,29 @@ public class CounsellingSession {
 
     public void setApproved(boolean approved) {
         isApproved = approved;
+    }
+
+    public String getTimeOptions() {
+        return timeOptions;
+    }
+
+    public void setTimeOptions(String timeOptions) {
+        this.timeOptions = timeOptions;
+    }
+
+    public CounsellingMode getCounsellingMode() {
+        return counsellingMode;
+    }
+
+    public void setCounsellingMode(CounsellingMode counsellingMode) {
+        this.counsellingMode = counsellingMode;
+    }
+
+    public Timestamp getFinalTime() {
+        return finalTime;
+    }
+
+    public void setFinalTime(Timestamp finalTime) {
+        this.finalTime = finalTime;
     }
 }
