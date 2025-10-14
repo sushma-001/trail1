@@ -17,10 +17,13 @@ public class CounsellingSessionRepository {
 
     private final RowMapper<CounsellingSession> rowMapper = (rs, rowNum) -> {
         CounsellingSession session = new CounsellingSession();
-        session.setStudentId(rs.getInt("student_id"));
         session.setCounsellorId(rs.getInt("counsellor_id"));
-        session.setFinalTime(rs.getTimestamp("final_time"));
+        session.setServiceId(rs.getInt("service_id"));
+        session.setStudentId(rs.getInt("student_id"));
         session.setApproved(rs.getBoolean("is_approved"));
+        session.setTimeOptions(rs.getString("time_options"));
+        session.setCounsellingMode(CounsellingSession.CounsellingMode.valueOf(rs.getString("counselling_mode")));
+        session.setFinalTime(rs.getTimestamp("final_time"));
         return session;
     };
 
@@ -35,8 +38,8 @@ public class CounsellingSessionRepository {
     }
 
     public CounsellingSession save(CounsellingSession session) {
-        String sql = "INSERT INTO CounsellingSession (student_id, counsellor_id, final_time, is_approved) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, session.getStudentId(), session.getCounsellorId(), session.getFinalTime(), session.isApproved());
+        String sql = "INSERT INTO CounsellingSession (counsellor_id, service_id, student_id, is_approved, time_options, counselling_mode, final_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, session.getCounsellorId(), session.getServiceId(), session.getStudentId(), session.isApproved(), session.getTimeOptions(), session.getCounsellingMode().name(), session.getFinalTime());
         return session;
     }
 }
