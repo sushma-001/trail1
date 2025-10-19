@@ -3,20 +3,26 @@ package com.thecodealchemist.spring_boot_project.model;
 import java.sql.Timestamp;
 
 public class CounsellingSession {
-
+    private int sessionId;
     private int counsellorId;
-    private int serviceId;
     private int studentId;
+    private int serviceId;
     private boolean isApproved;
-    private String timeOptions;
     private CounsellingMode counsellingMode;
     private Timestamp finalTime;
 
     public enum CounsellingMode {
-        Online, Offline
+        Online,
+        Offline
     }
 
-    // Getters and Setters
+    public int getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(int sessionId) {
+        this.sessionId = sessionId;
+    }
 
     public int getCounsellorId() {
         return counsellorId;
@@ -24,14 +30,6 @@ public class CounsellingSession {
 
     public void setCounsellorId(int counsellorId) {
         this.counsellorId = counsellorId;
-    }
-
-    public int getServiceId() {
-        return serviceId;
-    }
-
-    public void setServiceId(int serviceId) {
-        this.serviceId = serviceId;
     }
 
     public int getStudentId() {
@@ -42,20 +40,20 @@ public class CounsellingSession {
         this.studentId = studentId;
     }
 
+    public int getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(int serviceId) {
+        this.serviceId = serviceId;
+    }
+
     public boolean isApproved() {
         return isApproved;
     }
 
     public void setApproved(boolean approved) {
         isApproved = approved;
-    }
-
-    public String getTimeOptions() {
-        return timeOptions;
-    }
-
-    public void setTimeOptions(String timeOptions) {
-        this.timeOptions = timeOptions;
     }
 
     public CounsellingMode getCounsellingMode() {

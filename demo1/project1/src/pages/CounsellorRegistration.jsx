@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const CounsellorRegistration = () => {
@@ -12,63 +11,70 @@ const CounsellorRegistration = () => {
         e.preventDefault();
         setError('');
 
-        const studentId = sessionStorage.getItem('studentId');
-        if (!studentId) {
-            setError('You must be logged in to register as a counsellor.');
-            return;
-        }
-
         try {
-            await axios.post('/api/counsellor/register', {
-                counsellorId: parseInt(studentId),
-                specialization,
-                selfDescription,
+            const response = await fetch('http://localhost:8080/api/counsellor/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ specialization, selfDescription }),
             });
-            navigate('/counsellor-dashboard');
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+                navigate('/counsellor-dashboard');
+            } else {
+                setError(data.message || 'An error occurred');
+            }
         } catch (err) {
-            setError(err.response?.data?.message || 'An error occurred during registration.');
+            setError('Failed to connect to the server.');
         }
     };
 
     return (
-        <div className="flex items-center justify-center h-screen bg-gray-100">
-            <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-2xl font-bold mb-4 text-center">Register as a Counsellor</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label htmlFor="specialization" className="block text-gray-700">Specialization</label>
-                        <select
-                            id="specialization"
-                            value={specialization}
-                            onChange={(e) => setSpecialization(e.target.value)}
-                            className="w-full px-3 py-2 border rounded-md"
-                        >
-                            <option value="Academics">Academics</option>
-                            <option value="Substance_Addiction">Substance Addiction</option>
-                            <option value="Stress_Anxiety">Stress & Anxiety</option>
-                            <option value="Grief_Loss">Grief & Loss</option>
-                            <option value="Personal_Relationships">Personal Relationships</option>
-                        </select>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="selfDescription" className="block text-gray-700">Self Description</label>
-                        <textarea
-                            id="selfDescription"
-                            value={selfDescription}
-                            onChange={(e) => setSelfDescription(e.target.value)}
-                            rows="4"
-                            className="w-full px-3 py-2 border rounded-md"
-                        ></textarea>
-                    </div>
-                    {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <div className="container mx-auto p-4">
+            <h1 className="text-3xl font-bold mb-4">Register as a Counsellor</h1>
+            {error && <p className="text-red-500">{error}</p>}
+            <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                    <label htmlFor="specialization" className="block text-gray-700 text-sm font-bold mb-2">
+                        Specialization
+                    </label>
+                    <select
+                        id="specialization"
+                        value={specialization}
+                        onChange={(e) => setSpecialization(e.target.value)}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                        <option>Academics</option>
+                        <option>Substance_Addiction</option>
+                        <option>Stress_Anxiety</option>
+                        <option>Grief_Loss</option>
+                        <option>Personal_Relationships</option>
+                    </select>
+                </div>
+                <div className="mb-6">
+                    <label htmlFor="selfDescription" className="block text-gray-700 text-sm font-bold mb-2">
+                        Self Description
+                    </label>
+                    <textarea
+                        id="selfDescription"
+                        value={selfDescription}
+                        onChange={(e) => setSelfDescription(e.target.value)}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        rows="4"
+                    ></textarea>
+                </div>
+                <div className="flex items-center justify-between">
                     <button
                         type="submit"
-                        className="w-full px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     >
                         Register
                     </button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     );
 };

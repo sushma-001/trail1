@@ -16,39 +16,38 @@ public class CounsellorAvailabilityRepository {
 
     public CounsellorAvailability save(CounsellorAvailability availability) {
         String sql = "INSERT INTO CounsellorAvailability (counsellor_id, available_time, is_booked) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql,
-                availability.getCounsellorId(),
-                availability.getAvailableTime(),
-                availability.isBooked()
-        );
+        jdbcTemplate.update(sql, availability.getCounsellorId(), availability.getAvailableTime(), availability.isBooked());
         return availability;
     }
 
-    public CounsellorAvailability findById(int counsellorId, Time availableTime) {
-        String sql = "SELECT * FROM CounsellorAvailability WHERE counsellor_id = ? AND available_time = ?";
-        List<CounsellorAvailability> availabilities = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            CounsellorAvailability availability = new CounsellorAvailability();
-            availability.setCounsellorId(rs.getInt("counsellor_id"));
-            availability.setAvailableTime(rs.getTime("available_time"));
-            availability.setBooked(rs.getBoolean("is_booked"));
-            return availability;
-        }, counsellorId, availableTime);
-        return availabilities.isEmpty() ? null : availabilities.get(0);
-    }
-
     public List<CounsellorAvailability> findByCounsellorId(int counsellorId) {
-        String sql = "SELECT * FROM CounsellorAvailability WHERE counsellor_id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+        String sql = "SELECT * FROM CounsellorAvailability WHERE counsellor_id = ? AND is_booked = false";
+        return jdbcTemplate.query(sql, new Object[]{counsellorId}, (rs, rowNum) -> {
             CounsellorAvailability availability = new CounsellorAvailability();
             availability.setCounsellorId(rs.getInt("counsellor_id"));
             availability.setAvailableTime(rs.getTime("available_time"));
             availability.setBooked(rs.getBoolean("is_booked"));
             return availability;
-        }, counsellorId);
+        });
     }
 
     public void update(CounsellorAvailability availability) {
         String sql = "UPDATE CounsellorAvailability SET is_booked = ? WHERE counsellor_id = ? AND available_time = ?";
         jdbcTemplate.update(sql, availability.isBooked(), availability.getCounsellorId(), availability.getAvailableTime());
+    }
+
+    public CounsellorAvailability findById(int counsellorId, Time availableTime) {
+        String sql = "SELECT * FROM CounsellorAvailability WHERE counsellor_id = ? AND available_time = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new Object[]{counsellorId, availableTime}, (rs, rowNum) -> {
+                CounsellorAvailability availability = new CounsellorAvailability();
+                availability.setCounsellorId(rs.getInt("counsellor_id"));
+                availability.setAvailableTime(rs.getTime("available_time"));
+                availability.setBooked(rs.getBoolean("is_booked"));
+                return availability;
+            });
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
