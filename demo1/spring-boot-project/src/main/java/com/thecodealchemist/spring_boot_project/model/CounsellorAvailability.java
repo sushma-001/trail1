@@ -3,13 +3,9 @@ package com.thecodealchemist.spring_boot_project.model;
 import java.sql.Time;
 
 public class CounsellorAvailability {
-
     private int counsellorId;
     private Time availableTime;
     private boolean isBooked;
-    private Counsellor counsellor;
-
-    // Getters and Setters
 
     public int getCounsellorId() {
         return counsellorId;
@@ -33,13 +29,5 @@ public class CounsellorAvailability {
 
     public void setBooked(boolean booked) {
         isBooked = booked;
-    }
-
-    public Counsellor getCounsellor() {
-        return counsellor;
-    }
-
-    public void setCounsellor(Counsellor counsellor) {
-        this.counsellor = counsellor;
     }
 }

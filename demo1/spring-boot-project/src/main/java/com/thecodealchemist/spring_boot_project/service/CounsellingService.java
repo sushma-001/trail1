@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CounsellingService {
@@ -23,76 +24,44 @@ public class CounsellingService {
     private CounsellorAvailabilityRepository availabilityRepository;
 
     @Autowired
-    private CounsellorRatingRepository ratingRepository;
+    private CounsellorRepository counsellorRepository;
 
     @Autowired
     private StudentRepository studentRepository;
 
-    @Autowired
-    private CounsellorRepository counsellorRepository;
-
     @Transactional
-    public CounsellingSession bookSession(int studentId, int counsellorId, Time sessionTime) {
-        Student student = studentRepository.findById(studentId).orElse(null);
-        if (student == null) {
-            throw new RuntimeException("Student not found");
-        }
-        Counsellor counsellor = counsellorRepository.findById(counsellorId);
-        if (counsellor == null) {
-            throw new RuntimeException("Counsellor not found");
+    public CounsellingSession bookSession(int studentId, int counsellorId, String sessionTime) {
+        CounsellorAvailability availability = availabilityRepository.findById(counsellorId, Time.valueOf(sessionTime));
+        if (availability == null || availability.isBooked()) {
+            throw new RuntimeException("Time slot not available or already booked");
         }
 
-        CounsellorAvailability availability = availabilityRepository.findById(counsellorId, sessionTime);
-
-        if (availability == null) {
-            throw new RuntimeException("Time slot not available");
-        }
-
-        if (availability.isBooked()) {
-            throw new RuntimeException("Time slot is already booked");
-        }
         availability.setBooked(true);
         availabilityRepository.update(availability);
 
         CounsellingSession session = new CounsellingSession();
         session.setStudentId(studentId);
         session.setCounsellorId(counsellorId);
+        session.setServiceId(3); // Assuming 'Mentorship' service_id is 3
+        session.setApproved(true);
+        session.setCounsellingMode(CounsellingSession.CounsellingMode.Online);
 
         LocalDate today = LocalDate.now();
-        LocalTime localSessionTime = sessionTime.toLocalTime();
+        LocalTime localSessionTime = Time.valueOf(sessionTime).toLocalTime();
         session.setFinalTime(Timestamp.valueOf(LocalDateTime.of(today, localSessionTime)));
-
-        session.setApproved(true);
 
         return sessionRepository.save(session);
     }
 
-    public List<CounsellingSession> getMySessions(int studentId) {
-        return sessionRepository.findByStudentId(studentId);
-    }
-
-    @Transactional
-    public CounsellorRating rateCounsellor(int studentId, int counsellorId, int rating, String feedback) {
-        if (studentRepository.findById(studentId).isEmpty()) {
-            throw new RuntimeException("Student not found");
-        }
-        Counsellor counsellor = counsellorRepository.findById(counsellorId);
-        if (counsellor == null) {
-            throw new RuntimeException("Counsellor not found");
-        }
-
-        CounsellorRating newRating = new CounsellorRating();
-        newRating.setStudentId(studentId);
-        newRating.setCounsellorId(counsellorId);
-        newRating.setRating(rating);
-        newRating.setFeedback(feedback);
-        ratingRepository.save(newRating);
-
-        List<CounsellorRating> allRatings = ratingRepository.findByCounsellorId(counsellorId);
-        double average = allRatings.stream().mapToInt(CounsellorRating::getRating).average().orElse(0.0);
-        counsellor.setRating(new java.math.BigDecimal(average).setScale(2, java.math.RoundingMode.HALF_UP));
-        counsellorRepository.update(counsellor);
-
-        return newRating;
+    public List<SessionViewDTO> getMySessions(int studentId) {
+        return sessionRepository.findByStudentId(studentId).stream()
+                .map(session -> {
+                    Counsellor counsellor = counsellorRepository.findById(session.getCounsellorId());
+                    return new SessionViewDTO(
+                            counsellor.getStudent().getFirstName() + " " + counsellor.getStudent().getLastName(),
+                            counsellor.getSpecialization().name(),
+                            session.getFinalTime()
+                    );
+                }).collect(Collectors.toList());
     }
 }

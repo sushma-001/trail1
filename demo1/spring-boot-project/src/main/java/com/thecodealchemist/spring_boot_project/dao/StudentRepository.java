@@ -119,6 +119,11 @@ public class StudentRepository {
         );
     }
 
+    public Student findById2(Integer id) {
+    String sql = "SELECT * FROM Student WHERE student_id = ?";
+    List<Student> students = jdbcTemplate.query(sql, new StudentRowMapper(), id);
+    return students.isEmpty() ? null : students.get(0);
+}
 
     
 }

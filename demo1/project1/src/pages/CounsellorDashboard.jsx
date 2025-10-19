@@ -1,82 +1,88 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 const CounsellorDashboard = () => {
     const [availableTime, setAvailableTime] = useState('');
     const [requests, setRequests] = useState([]);
     const [error, setError] = useState('');
 
-    const studentId = sessionStorage.getItem('studentId');
+    const fetchRequests = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/counsellor/requests', {
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setRequests(data.data);
+            } else {
+                setError(data.message || 'Failed to fetch requests');
+            }
+        } catch (err) {
+            setError('Failed to connect to the server.');
+        }
+    };
 
     useEffect(() => {
-        const fetchRequests = async () => {
-            if (!studentId) return;
-            try {
-                const response = await axios.get(`/api/counsellor/${studentId}/requests`);
-                setRequests(response.data.data);
-            } catch (err) {
-                setError('Failed to fetch requests.');
-            }
-        };
-
         fetchRequests();
-    }, [studentId]);
+    }, []);
 
-    const handleAddTimeSlot = async (e) => {
+    const handleAddTime = async (e) => {
         e.preventDefault();
         setError('');
-        if (!availableTime) {
-            setError('Please select a time.');
-            return;
-        }
-
         try {
-            await axios.post(`/api/counsellor/${studentId}/availability`, {
-                availableTime: `${availableTime}:00`,
+            const response = await fetch('http://localhost:8080/api/counsellor/availability', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ availableTime: `${availableTime}:00` }),
             });
-            setAvailableTime('');
-            alert('Time slot added successfully!');
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message);
+                setAvailableTime('');
+            } else {
+                setError(data.message || 'Failed to add time');
+            }
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to add time slot.');
+            setError('Failed to connect to the server.');
         }
     };
 
     return (
-        <div className="flex h-screen">
-            <div className="w-1/4 p-4 bg-gray-100 border-r">
-                <h3 className="text-lg font-bold mb-4">Add a Time Slot</h3>
-                <form onSubmit={handleAddTimeSlot}>
+        <div className="flex">
+            <div className="w-1/4 p-4 border-r">
+                <h2 className="text-xl font-bold mb-4">Add Availability</h2>
+                <form onSubmit={handleAddTime}>
                     <div className="mb-4">
+                        <label htmlFor="availableTime" className="block text-sm font-medium text-gray-700">
+                            Time
+                        </label>
                         <input
                             type="time"
+                            id="availableTime"
                             value={availableTime}
                             onChange={(e) => setAvailableTime(e.target.value)}
-                            className="w-full px-3 py-2 border rounded-md"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         />
                     </div>
                     <button
                         type="submit"
-                        className="w-full px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
                     >
                         Add Time
                     </button>
                 </form>
             </div>
-            <div className="flex-grow p-4">
-                <h3 className="text-lg font-bold mb-4">Today's Session Requests</h3>
-                {error && <p className="text-red-500 mb-4">{error}</p>}
-                <div>
-                    {requests.length > 0 ? (
-                        requests.map((req) => (
-                            <div key={req.finalTime} className="p-4 mb-4 bg-white rounded-lg shadow-md">
-                                <p><strong>Student:</strong> {req.studentId}</p>
-                                <p><strong>Time:</strong> {new Date(req.finalTime).toLocaleTimeString()}</p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No requests for today.</p>
-                    )}
-                </div>
+            <div className="w-3/4 p-4">
+                <h1 className="text-2xl font-bold mb-4">Today's Session Requests</h1>
+                {error && <p className="text-red-500">{error}</p>}
+                <ul>
+                    {requests.map((req) => (
+                        <li key={req.session_id} className="border-b p-2">
+                            <p><strong>Student:</strong> {req.student_id}</p>
+                            <p><strong>Time:</strong> {new Date(req.final_time).toLocaleTimeString()}</p>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     );

@@ -1,10 +1,14 @@
 package com.thecodealchemist.spring_boot_project.model;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.List;
 
 public class Counsellor {
+    private int counsellorId;
+    private Specialization specialization;
+    private int noOfStudentsCounselled;
+    private String selfDescription;
+    private Timestamp joinedAt;
+    private Student student;
 
     public enum Specialization {
         Academics,
@@ -13,17 +17,6 @@ public class Counsellor {
         Grief_Loss,
         Personal_Relationships
     }
-
-    private int counsellorId;
-    private Specialization specialization;
-    private int noOfStudentsCounselled;
-    private String selfDescription;
-    private BigDecimal rating;
-    private Timestamp joinedAt;
-    private Student student;
-    private List<CounsellorAvailability> availableTimes;
-
-    // Getters and Setters
 
     public int getCounsellorId() {
         return counsellorId;
@@ -57,14 +50,6 @@ public class Counsellor {
         this.selfDescription = selfDescription;
     }
 
-    public BigDecimal getRating() {
-        return rating;
-    }
-
-    public void setRating(BigDecimal rating) {
-        this.rating = rating;
-    }
-
     public Timestamp getJoinedAt() {
         return joinedAt;
     }
@@ -79,13 +64,5 @@ public class Counsellor {
 
     public void setStudent(Student student) {
         this.student = student;
-    }
-
-    public List<CounsellorAvailability> getAvailableTimes() {
-        return availableTimes;
-    }
-
-    public void setAvailableTimes(List<CounsellorAvailability> availableTimes) {
-        this.availableTimes = availableTimes;
     }
 }

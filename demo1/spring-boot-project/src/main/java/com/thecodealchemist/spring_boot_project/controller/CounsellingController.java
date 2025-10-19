@@ -1,55 +1,40 @@
 package com.thecodealchemist.spring_boot_project.controller;
 
-import com.thecodealchemist.spring_boot_project.model.CounsellingSession;
-import com.thecodealchemist.spring_boot_project.model.CounsellorRating;
 import com.thecodealchemist.spring_boot_project.service.CounsellingService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/counselling")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class CounsellingController {
 
     @Autowired
     private CounsellingService counsellingService;
 
     @PostMapping("/book")
-    public ResponseEntity<?> bookSession(@RequestBody Map<String, Object> payload) {
-        try {
-            int studentId = (Integer) payload.get("studentId");
-            int counsellorId = (Integer) payload.get("counsellorId");
-            Time sessionTime = Time.valueOf((String) payload.get("sessionTime"));
-
-            CounsellingSession session = counsellingService.bookSession(studentId, counsellorId, sessionTime);
-            return ResponseEntity.ok(Map.of("status", "success", "message", "✅ Appointment approved", "data", session));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", e.getMessage()));
+    public ResponseEntity<?> bookSession(@RequestBody Map<String, String> payload, HttpSession session) {
+        Integer studentId = (Integer) session.getAttribute("studentId");
+        if (studentId == null) {
+            return ResponseEntity.status(401).body(Map.of("status", "error", "message", "You must be logged in to book a session"));
         }
+        int counsellorId = Integer.parseInt(payload.get("counsellorId"));
+        String sessionTime = payload.get("sessionTime");
+        var result = counsellingService.bookSession(studentId, counsellorId, sessionTime);
+        return ResponseEntity.ok(Map.of("status", "success", "message", "✅ Appointment approved", "data", result));
     }
 
-    @GetMapping("/my-sessions/{student_id}")
-    public ResponseEntity<?> getMySessions(@PathVariable("student_id") int studentId) {
-        List<CounsellingSession> sessions = counsellingService.getMySessions(studentId);
-        return ResponseEntity.ok(Map.of("status", "success", "data", sessions));
-    }
-
-    @PostMapping("/rate")
-    public ResponseEntity<?> rateCounsellor(@RequestBody Map<String, Object> payload) {
-        try {
-            int studentId = (Integer) payload.get("studentId");
-            int counsellorId = (Integer) payload.get("counsellorId");
-            int rating = (Integer) payload.get("rating");
-            String feedback = (String) payload.get("feedback");
-
-            CounsellorRating newRating = counsellingService.rateCounsellor(studentId, counsellorId, rating, feedback);
-            return ResponseEntity.ok(Map.of("status", "success", "message", "Rating submitted successfully", "data", newRating));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", e.getMessage()));
+    @GetMapping("/my-sessions")
+    public ResponseEntity<?> getMySessions(HttpSession session) {
+        Integer studentId = (Integer) session.getAttribute("studentId");
+        if (studentId == null) {
+            return ResponseEntity.status(401).body(Map.of("status", "error", "message", "You must be logged in to view your sessions"));
         }
+        var result = counsellingService.getMySessions(studentId);
+        return ResponseEntity.ok(Map.of("status", "success", "data", result));
     }
 }
